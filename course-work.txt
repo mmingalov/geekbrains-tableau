@@ -1,41 +1,30 @@
-ЗАДАНИЕ:
-Построить ДАШБОРД по данных по такси в городе Нью-Йорк. Заказчик - отдел развития бизнеса. 
-Использовать ретроспективные данные (прогноз делать не надо). Показать инсайты!
-Буду оценивать:
-- использованный пройденный фукнционал, 
-- корректность выбранных визуализаций для выбранных метрик,
-- UI дашборда.
+https://github.com/mmingalov/geekbrains-tableau/blob/master/CourseWork_mmingalov.twbx
+https://public.tableau.com/profile/maxim.mingalov#!/vizhome/CourseWork_mmingalov/Dashboard1
 
-Метрики роста и продуктовые метрики:
- сколько кол-во пассажиров на авто, средний чек, как эти метрики растут, зависит от района
- с каких районов какие люди уезжают,  в какие зоны уезжают (для дальнейшего стимулирования направлений)
- время отъезда
- 
- СДЕЛАНО:
- - фильтр высшего приоритета для полей дата -- только данные в периоде с 01.09.2019 по 31.12.2020;
- - четыре месячных метрики и завязанный на них Параметр Monthly Metric;
-
--	LOD с глубиной детализации "локация забора пассажира", "название месяца в состоявшейся поездке": 
-		"Средняя дистанция поездки в локации" MIN({ FIXED [PULocationID],MONTH([tpep_pickup_datetime]): AVG([trip_distance])})
-		"Средняя цена поездки в локации" MIN({ FIXED [PULocationID]: SUM([total_amount])/COUNT([total_amount])})
-		"Кол-во пассажиров в локации" MIN({ FIXED [PULocationID],MONTH([tpep_pickup_datetime]): SUM([passenger_count])})
-		"Кол-во поездок в локации" MIN({ FIXED [PULocationID],MONTH([tpep_pickup_datetime]): COUNT([PULocationID])})
--	Вычисляемое поле Calc2:
+СДЕЛАНО:
+ - фильтр высшего приоритета для поля "Дата подбора пассажира" -- только данные в периоде с 01.09.2019 по 31.12.2020;
+ - четыре продуктовых метрики и завязанный на них Параметр **Monthly Metric**;
+ - LOD с глубиной детализации "локация забора пассажира", "название месяца состоявшейся поездки": 
+* 		"Средняя дистанция поездки в локации" MIN({ FIXED [PULocationID],MONTH([tpep_pickup_datetime]): AVG([trip_distance])})
+* 		"Средняя цена поездки в локации" MIN({ FIXED [PULocationID]: SUM([total_amount])/COUNT([total_amount])})
+* 		"Кол-во пассажиров в локации" MIN({ FIXED [PULocationID],MONTH([tpep_pickup_datetime]): SUM([passenger_count])})
+* 		"Кол-во поездок в локации" MIN({ FIXED [PULocationID],MONTH([tpep_pickup_datetime]): COUNT([PULocationID])})
+ - Вычисляемое поле Calc2:
+```
 	CASE [Monthly Metric]
 		WHEN "Средняя дистанция поездки в локации" THEN {INCLUDE :([LOD_Month-Location_AVG_trip_dist])}
 		WHEN "Средняя цена поездки в локации" THEN {INCLUDE :([LOD_Month-Location_AVG_trip_cost])}
 		WHEN "Кол-во пассажиров в локации" THEN {INCLUDE :([LOD_Month-Location_CNT_passengers])}
 		WHEN "Кол-во поездок в локации" THEN {INCLUDE :([LOD_Month-Location_CNT_trips])}
 	END
-	
--	Вычисляемое поле Calc1:
+```
+ - Вычисляемое поле Calc1:
+```
 	CASE [Monthly Metric]
 		WHEN "Средняя дистанция поездки в локации" THEN {INCLUDE :(AVG([trip_distance]))}
 		WHEN "Средняя цена поездки в локации" THEN {INCLUDE :(AVG([total_amount]))}
 		WHEN "Кол-во пассажиров в локации" THEN {INCLUDE :(SUM([passenger_count]))}
 		WHEN "Кол-во поездок в локации" THEN {INCLUDE :(COUNT([PULocationID]))}
 	END
- 
- 
+```
  - визуализация метрик в разрезе локации подбора пассажира с использованием Параметра для переключения с одной метрики на другую.
-
